@@ -68,7 +68,35 @@ def main(tpl, out, imgdir=None):
                 full = os.path.join(root, f)
                 z.write(full, os.path.relpath(full, d))
     shutil.rmtree(d)
+    for i, s in enumerate(SLIDES, 1):
+        if s.get('video'):
+            add_video(out, i, s['video'], s['poster'])
     print('wrote', out)
+
+def add_video(path, slide_no, video, poster):
+    from pptx import Presentation
+    from pptx.util import Emu, Pt
+    from pptx.dml.color import RGBColor
+    from pptx.enum.shapes import MSO_SHAPE
+    from PIL import Image
+    prs = Presentation(path)
+    slide = prs.slides[slide_no - 1]
+    for shp in list(slide.shapes):
+        if shp.name.startswith('replaceable-prompt-'):
+            shp._element.getparent().remove(shp._element)
+    frame = next(s for s in slide.shapes if s.name == 'picture-frame')
+    vw, vh = Image.open(poster).size
+    h = frame.height
+    w = round(h * vw / vh)
+    left_col_x, left_col_w = Emu(552450), Emu(5305425)  # text column of the template
+    x = left_col_x + (left_col_w - w) // 2
+    mov = slide.shapes.add_movie(video, x, frame.top, w, h, poster_frame_image=poster, mime_type='video/mp4')
+    mov.name = 'problem-video'
+    mov.auto_shape_type = MSO_SHAPE.ROUNDED_RECTANGLE
+    mov.line.color.rgb = RGBColor(0xD9, 0xCB, 0xE5)
+    mov.line.width = Pt(1)
+    prs.save(path)
+    print('video', slide_no, video)
 
 if __name__ == '__main__':
     main(*sys.argv[1:])

@@ -65,6 +65,16 @@ def slide1():
     paste_card(bg, a, am, pad + v.width + gap, (H - a.height) // 2)
     bg.save(os.path.join(OUT, '1.png'))
 
+def pair(left, right, out, pad=50, gap=50):
+    bg = background()
+    h = H - 2 * pad
+    a, am = card(Image.open(os.path.join(SRC, left)), h=h)
+    b, bm = card(Image.open(os.path.join(SRC, right)), h=h)
+    x = (W - a.width - gap - b.width) // 2
+    paste_card(bg, a, am, x, pad)
+    paste_card(bg, b, bm, x + a.width + gap, pad)
+    bg.save(os.path.join(OUT, out))
+
 def slide5(items, total_label, sub):
     bg = background()
     d = ImageDraw.Draw(bg)
@@ -91,7 +101,7 @@ if __name__ == '__main__':
     os.makedirs(OUT, exist_ok=True)
     single('lrytas_kaunas_2026-11-12.png', '1.png')
     single('spynos_koncepcija.webp', '2.png')
-    single('latkauskas_2026-10-05.png', '3.png')
+    pair('latkauskas_2026-10-05.png', 'lrt_video_uzrakintos_durys.webp', '3.png')
     single('lrt_istatyme_atsakymo_nera.png', '4.png')
     items = [('Spynos (12 × 250 €)', 3000), ('Kūrimas ir bandymai', 1500),
              ('Teisinė pagalba', 800), ('Montavimas (su ryšiu)', 700)]

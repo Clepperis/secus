@@ -2,17 +2,16 @@ TEAM = "GEN29 · Secus"
 
 SLIDES = [
   {  # 1 Žmogus ir problema
-    "text": [
-      "Gyventojams, kurių priedanga – užrakintas daugiabučio rūsys.",
-      "Skelbiamas oro pavojus, o durys užrakintos: raktas pas administratorių.",
-      "2026 m. lapkričio 11 d. naktį per oro pavojų kaunietė rado užrakintą priedangą (Lrytas).",
-    ],
+    # Text boxes on this slide are replaced by the video (left side).
+    "text": [],
+    "video": "nuotraukos/video1.mp4",
+    "poster": "nuotraukos/video1_poster.png",
     "notes": [
       "KALBĖTOJO TEKSTAS (~20 s):",
       "Lapkričio 11-osios naktį Kaune paskelbtas raudonas oro pavojus. Kaunietė nuėjo į artimiausią oficialiame žemėlapyje pažymėtą priedangą – Tado Ivanausko progimnaziją. "
       "Durys buvo užrakintos, šalia – nė vieno atsakingo žmogaus. Tai ne vienas atvejis: spalio 18-ąją Šiauliuose užrakinta liko daugiau nei pusė priedangų. "
       "Taisyklės leidžia priedangą paruošti per 12 valandų, o pavojus trunka minutes. Taip žmonės praranda pasitikėjimą ir kitą kartą net neina.",
-      "[Nuotraukoje: Lrytas straipsnis, 2026-11-12. Šalia – LRT vaizdo įrašas „Rado užrakintas priedangos duris“.]",
+      "[Kairėje – Delfi vaizdo įrašas (6 s): žmogus bando atidaryti užrakintas priedangos duris. Paleiskite jį paspaudę ant video, tada kalbėkite. Dešinėje – Lrytas straipsnis, 2026-11-12.]",
       "Šaltiniai: Lrytas, 2026-11-12; LRT apie Šiaulius, 2026-10 (lrt.lt/naujienos/lietuvoje/2/3087496); LRT apie 12 val. taisyklę (lrt.lt/naujienos/lietuvoje/2/2935348).",
     ],
   },
@@ -41,7 +40,7 @@ SLIDES = [
       "Modelis: savivaldybė vieną kartą perka spyną ir montavimą, o už ryšį ir priežiūrą moka metinį mokestį – taip pajamos ne vienkartinės. "
       "Paklausa jau yra: Savivaldybių asociacijos prezidentas Audrius Klišonis viešai pasisakė už elektronines spynas priedangose. "
       "Pradėsime nuo Visagino – jis prie Baltarusijos sienos, o gegužę dronų pavojus skelbtas kaimyninėje Ignalinoje. Paskui siūlysime kitoms savivaldybėms, mokykloms ir daugiabučių administratoriams.",
-      "[Nuotraukoje: Kauno politiko D. Latkausko straipsnis „Priedangos Kaune: žmonėms ar tik ataskaitoms?“ – savivaldybės jaučia spaudimą.]",
+      "[Nuotraukoje: Kauno politiko D. Latkausko straipsnis „Priedangos Kaune: žmonėms ar tik ataskaitoms?“ ir LRT vaizdas „Rado užrakintas priedangos duris“ – politikai ir gyventojai spaudžia savivaldybes.]",
       "Šaltiniai: LRT apie Klišonį (lrt.lt/naujienos/lietuvoje/2/2939320); LRT apie Ignaliną 2026-05-20 (lrt.lt/naujienos/lietuvoje/2/2934077).",
     ],
   },
