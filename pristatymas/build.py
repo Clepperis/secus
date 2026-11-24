@@ -12,6 +12,9 @@ from content import TEAM, SLIDES
 SLOT_RATIO = 5.75 / 3.9  # picture slot w/h on every slide
 
 def set_text(xml, shape_name, text):
+    # Keep numbers and their units on one line.
+    text = re.sub(r'(\d) (?=\d{3}\b)', '\\1\u00a0', text)
+    text = re.sub(r'(\d) (?=€)', '\\1\u00a0', text)
     m = re.search(r'<p:sp>(?:(?!</p:sp>).)*?name="%s".*?</p:sp>' % re.escape(shape_name), xml, re.S)
     assert m, shape_name
     sp = m.group(0)

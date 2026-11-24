@@ -5,44 +5,43 @@ SLIDES = [
     "text": [
       "Gyventojams, kurių priedanga – užrakintas daugiabučio rūsys.",
       "Skelbiamas oro pavojus, o durys užrakintos: raktas pas administratorių.",
-      "2026 m. spalio 18 d. per oro pavojų Šiauliuose užrakinta liko daugiau nei pusė priedangų (LRT).",
+      "2026 m. lapkričio 11 d. naktį per oro pavojų kaunietė rado užrakintą priedangą (Lrytas).",
     ],
     "notes": [
       "KALBĖTOJO TEKSTAS (~20 s):",
-      "Spalio 18-ąją Šiaulių ir Panevėžio apskrityse paskelbtas oro pavojus. Žmonės bėga į priedangas, o Šiauliuose daugiau nei pusė jų užrakintos. "
-      "Raktas pas administratorių, kuris gal darbe, gal atostogose. Tą dieną priedangose pasislėpė vos apie 105 žmonės. "
+      "Lapkričio 11-osios naktį Kaune paskelbtas raudonas oro pavojus. Kaunietė nuėjo į artimiausią oficialiame žemėlapyje pažymėtą priedangą – Tado Ivanausko progimnaziją. "
+      "Durys buvo užrakintos, šalia – nė vieno atsakingo žmogaus. Tai ne vienas atvejis: spalio 18-ąją Šiauliuose užrakinta liko daugiau nei pusė priedangų. "
       "Taisyklės leidžia priedangą paruošti per 12 valandų, o pavojus trunka minutes. Taip žmonės praranda pasitikėjimą ir kitą kartą net neina.",
-      "[Nuotraukoje – kadras iš gyventojo vaizdo įrašo (Facebook). Galite pasakyti: „Štai ką nufilmavo gyventojas – užrakintos durys.“]",
-      "Šaltiniai: LRT, 2026-10 (lrt.lt/naujienos/lietuvoje/2/3087496); LRT apie 12 val. taisyklę (lrt.lt/naujienos/lietuvoje/2/2935348).",
+      "[Nuotraukoje: Lrytas straipsnis, 2026-11-12. Šalia – LRT vaizdo įrašas „Rado užrakintas priedangos duris“.]",
+      "Šaltiniai: Lrytas, 2026-11-12; LRT apie Šiaulius, 2026-10 (lrt.lt/naujienos/lietuvoje/2/3087496); LRT apie 12 val. taisyklę (lrt.lt/naujienos/lietuvoje/2/2935348).",
     ],
   },
   {  # 2 Sprendimas ir prototipas
     "text": [
-      "Išmani spyna: per pavojų vienu mygtuku atrakinamos visos rajono priedangos.",
-      "Pulto prototipą: pažymi rajoną, patvirtini – ir priedangos atrakintos.",
-      "DI padėjo surasti faktus ir kainas bei sukurti paspaudžiamą pulto prototipą.",
+      "Išmani spyna, kuri pati atsirakina, kai paskelbiamas oro pavojus.",
+      "Kol kas – spynos koncepcija; veikiantį pavyzdį pagaminsime pilotui.",
+      "DI padėjo surasti faktus ir kainas bei nupiešti spynos koncepciją.",
     ],
     "notes": [
       "KALBĖTOJO TEKSTAS (~25 s):",
-      "Mūsų sprendimas – Secus: išmani spyna ant priedangos durų ir valdymo pultas savivaldybei. "
-      "Paskelbus pavojų, operatorius pažymi rajoną arba visą miestą, patvirtina antru paspaudimu – ir visos ten esančios priedangos atsirakina per mažiau nei minutę. "
-      "Pultas rodo kiekvienos spynos būseną, bateriją ir ryšį, todėl iš anksto matome, kuri spyna sugedusi. "
-      "Spyna veikia nuo ličio baterijų, todėl elektros dingimas jos neišjungia; gamintojai panašioms NB-IoT spynoms nurodo 2–5 metus, o pultas iš anksto įspėja, kada keisti bateriją. Įprastas raktas lieka atsarginis variantas. "
-      "[Jei galite – parodykite prototipą gyvai arba nuotrauką.] DI naudojome faktams ir kainoms surinkti bei prototipui sukurti.",
+      "Mūsų sprendimas – Secus: išmani spyna priedangos durims. Kai paskelbiamas oro pavojus, spyna gauna signalą per mobilųjį ryšį, o jei jo nėra – per atsarginį radijo ryšį, ir atsirakina pati. "
+      "Nereikia laukti administratoriaus. Spyna veikia nuo ličio baterijų, todėl elektros dingimas jos neišjungia; gamintojai panašioms spynoms nurodo 2–5 metus. "
+      "Įprastas raktas lieka atsarginis variantas. Nuotraukoje – spynos koncepcija. DI naudojome faktams ir kainoms surinkti bei koncepcijos vaizdui sukurti.",
     ],
   },
   {  # 3 Verslo logika
     "text": [
-      "Gyventojai – per pavojų; savivaldybės ir VRM – per valdymo pultą.",
-      "Savivaldybė spyną ir montavimą perka kartą, o už pultą ir ryšį moka kasmet.",
+      "Gyventojai, kurie per oro pavojų skuba į artimiausią priedangą.",
+      "Savivaldybė perka spyną ir montavimą, o už ryšį ir priežiūrą moka kasmet.",
       "Pilotas Visagine: nedaug priedangų, greitas įdiegimas. Paskui – kitos savivaldybės ir mokyklos.",
     ],
     "notes": [
       "KALBĖTOJO TEKSTAS (~20 s):",
       "Naudotojai – gyventojai, o klientas – savivaldybė, nes būtent savivaldybės atsako už priedangas ir jų prieinamumą. "
-      "Modelis: savivaldybė vieną kartą perka spyną ir montavimą, o už pultą ir ryšį moka metinį mokestį – taip pajamos ne vienkartinės. "
+      "Modelis: savivaldybė vieną kartą perka spyną ir montavimą, o už ryšį ir priežiūrą moka metinį mokestį – taip pajamos ne vienkartinės. "
       "Paklausa jau yra: Savivaldybių asociacijos prezidentas Audrius Klišonis viešai pasisakė už elektronines spynas priedangose. "
       "Pradėsime nuo Visagino – jis prie Baltarusijos sienos, o gegužę dronų pavojus skelbtas kaimyninėje Ignalinoje. Paskui siūlysime kitoms savivaldybėms, mokykloms ir daugiabučių administratoriams.",
+      "[Nuotraukoje: Kauno politiko D. Latkausko straipsnis „Priedangos Kaune: žmonėms ar tik ataskaitoms?“ – savivaldybės jaučia spaudimą.]",
       "Šaltiniai: LRT apie Klišonį (lrt.lt/naujienos/lietuvoje/2/2939320); LRT apie Ignaliną 2026-05-20 (lrt.lt/naujienos/lietuvoje/2/2934077).",
     ],
   },
@@ -50,30 +49,31 @@ SLIDES = [
     "text": [
       "Mentorius patikrino idėją: problema įrodyta, bet vienas klientas – rizika.",
       "Pradedame nuo vienos savivaldybės, o klientais laikome ir mokyklas.",
-      "Išbandysime spyną ant tikrų rūsio durų, o pultą – su Visagino savivaldybe. Dar neaišku, ar pirks be įstatymo pakeitimo.",
+      "Išbandysime spyną ant tikrų rūsio durų Visagine. Dar neaišku, ar savivaldybės pirks be įstatymo pakeitimo.",
     ],
     "notes": [
       "KALBĖTOJO TEKSTAS (~20 s):",
       "Idėją kritiškai patikrino mentorius: problemą įvertino kaip įrodytą, bet perspėjo, kad vienas klientas – valstybė – yra rizika. "
       "Todėl pakeitėme planą: pradedame ne nuo visos Lietuvos, o nuo vienos savivaldybės, ir klientais laikome ne tik VRM, bet ir savivaldybes, mokyklas, administratorius. "
-      "Tyrinėdami sužinojome, kad elektronines spynas jau svarsto ir kai kurios savivaldybės, todėl mūsų skirtumas – atrakinimas regionais iš vieno pulto ir spynų būsenos stebėjimas. "
-      "Kitas žingsnis – išbandyti spyną ant tikrų rūsio durų ir parodyti pultą Visagino savivaldybei. Dar neaišku, ar savivaldybės pirks be įstatymo pakeitimo.",
+      "Tyrinėdami sužinojome, kad elektronines spynas jau svarsto ir kai kurios savivaldybės, todėl mūsų skirtumas – spyna atsirakina pati, vos paskelbus pavojų, ir veikia nuo baterijų. "
+      "Kitas žingsnis – išbandyti spyną ant tikrų rūsio durų Visagine. Dar neaišku, ar savivaldybės pirks be įstatymo pakeitimo – LRT rašo, kad įstatyme atsakymo nėra.",
+      "[Nuotraukoje: LRT „Oro pavojus naktį: neaišku, ar būtų atrakintos visos priedangos, o įstatyme atsakymo nėra“ (lrt.lt/naujienos/lietuvoje/2/3053501).]",
     ],
   },
   {  # 5 Kiek reikia
     "text": [
-      "Apie 10 000 € pilotui: 12 mūsų spynų Visagine ir valdymo pultas.",
-      "Spynos 3 600 €, kūrimas 3 000 €, pultas 2 000 €, montavimas ir ryšys 1 000 €.",
-      "Apie 3 mėnesius, inžinieriaus mentoriaus, savivaldybės sutikimo ir kibernetinio saugumo patikros.",
+      "Apie 6 000 € pilotui: 12 mūsų spynų Visagino priedangose.",
+      "Spynos 3 000 €, kūrimas 1 500 €, teisinė pagalba 800 €, montavimas 700 €.",
+      "Apie 3 mėnesius, inžinieriaus ir teisininko pagalbos bei savivaldybės sutikimo.",
     ],
     "notes": [
       "KALBĖTOJO TEKSTAS (~20 s):",
-      "Pilotui reikėtų apie 10 000 eurų: 12 mūsų spynų Visagino priedangose ir valdymo pultas. "
-      "Viena spyna su NB-IoT ryšio moduliu ir ličio baterijomis kainuotų apie 300 eurų; laidų tiesti nereikia, todėl montavimas pigus. "
-      "Pinigai: spynos 3 600, spynos kūrimas ir bandymai 3 000, pultas 2 000, montavimas ir ryšys metams apie 1 000 eurų. "
-      "Laiko reikia apie 3 mėnesių, o pagalbos – inžinieriaus mentoriaus, savivaldybės sutikimo ir kibernetinio saugumo patikros, nes nuotoliniu būdu atrakinamos durys turi būti apsaugotos nuo įsilaužimo.",
-      "Skaičiavimas (apytikris, mūsų prielaidos): spyna ~300 € × 12 = 3 600 €; kūrimas (prototipai, korpusas, bandymai) ~3 000 €; pultas (serveris, kūrimas, saugumo patikra) ~2 000 €; "
-      "montavimas ~40 € × 12 ≈ 500 € + ryšys 12 SIM × ~3 €/mėn. × 12 ≈ 430 € ≈ 1 000 €. Iš viso ~9 600 € ≈ 10 000 €. "
+      "Pilotui reikėtų apie 6 000 eurų: 12 mūsų spynų Visagino priedangose. Viena spyna su ryšio moduliu ir ličio baterijomis kainuotų apie 250 eurų; laidų tiesti nereikia, todėl montavimas pigus. "
+      "Pinigai: spynos 3 000, kūrimas ir bandymai 1 500, teisinė pagalba 800, montavimas ir ryšys metams 700 eurų. "
+      "Teisininkas reikalingas sutarčiai su savivaldybe ir atsakomybei: kas atsako, jei spyna neatsirakina ar atsirakina be reikalo. "
+      "Laiko reikia apie 3 mėnesių, o pagalbos – inžinieriaus, teisininko ir savivaldybės sutikimo.",
+      "Skaičiavimas (apytikris, mūsų prielaidos): spynos 12 × 250 € = 3 000 €; kūrimas ir bandymai 1 500 €; teisinė pagalba 800 €; "
+      "montavimas 12 × 30 € = 360 € + ryšys 12 SIM × ~2,4 €/mėn. × 12 mėn. ≈ 340 € = 700 €. Iš viso 6 000 €. "
       "Palyginimui: Igloohome išmani spyna (be mobiliojo ryšio) kainuoja 160–300 €.",
     ],
   },
