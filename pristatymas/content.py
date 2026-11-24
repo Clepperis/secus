@@ -35,11 +35,14 @@ SLIDES = [
       "Pilotas Visagine: nedaug priedangų, greitas įdiegimas. Paskui – kitos savivaldybės ir mokyklos.",
     ],
     "notes": [
-      "KALBĖTOJO TEKSTAS (~20 s):",
-      "Naudotojai – gyventojai, o klientas – savivaldybė, nes būtent savivaldybės atsako už priedangas ir jų prieinamumą. "
-      "Modelis: savivaldybė vieną kartą perka spyną ir montavimą, o už ryšį ir priežiūrą moka metinį mokestį – taip pajamos ne vienkartinės. "
-      "Paklausa jau yra: Savivaldybių asociacijos prezidentas Audrius Klišonis viešai pasisakė už elektronines spynas priedangose. "
-      "Pradėsime nuo Visagino – jis prie Baltarusijos sienos, o gegužę dronų pavojus skelbtas kaimyninėje Ignalinoje. Paskui siūlysime kitoms savivaldybėms, mokykloms ir daugiabučių administratoriams.",
+      "KALBĖTOJO TEKSTAS – 2 MIN PITCH (~20 s):",
+      "Mūsų spyną naudos gyventojai, o pirks savivaldybė, nes ji atsako už priedangas. Ji vieną kartą perka spyną ir montavimą, o kasmet moka už ryšį ir priežiūrą. "
+      "Paklausa jau yra – Savivaldybių asociacija pati ragina diegti elektronines spynas. Pradėsime nuo piloto Visagine, o pasiteisinus – kitos savivaldybės ir mokyklos.",
+      "KALBĖTOJO TEKSTAS – 3 MIN PITCH (~30 s):",
+      "Mūsų spyną naudos gyventojai, o pirks savivaldybė, nes būtent ji atsako už priedangas – ir būtent ją kritikuoja politikai bei žurnalistai, kai durys užrakintos. "
+      "Savivaldybė vieną kartą perka spyną ir montavimą, o kasmet moka už ryšį ir priežiūrą, todėl mūsų pajamos ne vienkartinės. "
+      "Paklausa jau yra – Savivaldybių asociacijos prezidentas Audrius Klišonis viešai pasisakė už elektronines spynas. "
+      "Pradėsime nuo Visagino: priedangų nedaug, įdiegti greita, o miestas prie Baltarusijos sienos. Pasiteisinus siūlysime kitoms savivaldybėms, mokykloms ir daugiabučių administratoriams – kad nepriklausytume nuo vieno kliento.",
       "[Nuotraukoje: Kauno politiko D. Latkausko straipsnis „Priedangos Kaune: žmonėms ar tik ataskaitoms?“ ir LRT vaizdas „Rado užrakintas priedangos duris“ – politikai ir gyventojai spaudžia savivaldybes.]",
       "Šaltiniai: LRT apie Klišonį (lrt.lt/naujienos/lietuvoje/2/2939320); LRT apie Ignaliną 2026-05-20 (lrt.lt/naujienos/lietuvoje/2/2934077).",
     ],
