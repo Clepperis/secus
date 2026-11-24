@@ -15,17 +15,17 @@ Patarimas: sugeneravę įkelkite paveikslėlius į aplanką kaip `1.png` … `6.
 ---
 
 ## 1 skaidrė – Žmogus ir problema
-Tikslas: per sekundę parodyti „sirena kaukia, o priedanga užrakinta“.
+Pirmiausia dėkite **kadrą iš gyventojo Facebook video**: sustabdykite tą akimirką, kai matosi užrakintos durys, ir padarykite ekrano nuotrauką (Windows: Win+Shift+S). Jei matosi žmonių veidai, geriau pasirinkite kadrą be jų. Žemiau esantį promptą naudokite tik tada, jei kadras netiks.
 
 ```
 Photorealistic photo, 3:2 landscape. Night scene at the entrance of an old Soviet-era 9-storey concrete apartment block in a small Lithuanian town. In the foreground, a heavy grey metal basement door with a large rusty padlock and chain; next to it a weathered sign that reads "PRIEDANGA" in white capital letters on a blue plate. A worried middle-aged woman holding a child's hand stands in front of the locked door, her face lit by her phone screen showing an air-raid alert. Cold blue-orange street light, light rain, shallow depth of field, sharp focus on the padlock. Documentary photojournalism style, natural colours, no text other than the sign, no watermark.
 ```
 
 ## 2 skaidrė – Sprendimas ir prototipas
-Geriausia dėti **tikrą prototipo ekrano nuotrauką** (`prototipas/02_atrakinta.png`), nes tai įrodo, kad prototipas egzistuoja. Jei norite gaminio vizualizacijos:
+Jau įdėta **tikra pulto prototipo ekrano nuotrauka** (`prototipas/02_atrakinta.png`). Jei norite parodyti ir pačią spyną, sugeneruokite ją žemiau esančiu promptu ir atsiųskite man: sujungsiu abu vaizdus į vieną paveikslėlį (spyna kairėje, pultas dešinėje). Kalbėdami sakykite, kad tai spynos **koncepcija**, o ne pagamintas prototipas.
 
 ```
-Photorealistic product photo, 3:2 landscape. A compact smart lock unit mounted on an old grey steel basement door of an apartment building: matte dark-grey housing about the size of a hand, a small green status LED glowing, a short LTE antenna, a discreet emergency key cylinder underneath, a small engraved shield icon. The door is slightly open, showing a lit basement shelter corridor behind it. Clean, realistic industrial design, soft daylight from the left, high detail, no brand logos, no text, no watermark.
+Photorealistic product photo, 3:2 landscape. A compact smart lock unit mounted on an old grey steel basement door of an apartment building: matte dark-grey housing about the size of a hand, a small green status LED glowing, a battery compartment cover, a short internal-antenna bulge, a discreet emergency key cylinder underneath; no cables (battery powered), a small engraved shield icon. The door is slightly open, showing a lit basement shelter corridor behind it. Clean, realistic industrial design, soft daylight from the left, high detail, no brand logos, no text, no watermark.
 ```
 
 ## 3 skaidrė – Verslo logika

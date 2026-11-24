@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secus · Priedangų valdymo pultas</title>
+<style>
+:root{
+  --bg:#0a1424; --panel:#0e1b2e; --panel2:#13233a; --line:#213651; --line2:#2b4466;
+  --text:#e9eff8; --muted:#8ea2bd; --dim:#5f7593;
+  --red:#e5484d; --red2:#c7333a; --redbg:rgba(229,72,77,.12);
+  --green:#2ec27e; --green2:#21a56a; --greenbg:rgba(46,194,126,.12);
+  --amber:#f2a93b; --blue:#5aa0ff;
+  --map-forest:#0b192a; --map-ground:#11223a; --map-block:#1d3352; --map-road:#20375a;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.4;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+.app{display:grid;grid-template-rows:60px 1fr;height:100vh;min-height:720px}
+
+/* Header */
+header{display:flex;align-items:center;gap:18px;padding:0 20px;background:#0c1829;border-bottom:1px solid var(--line);position:relative;z-index:5}
+.brand{display:flex;align-items:center;gap:11px;white-space:nowrap}
+.brand svg{flex:none}
+.brand h1{font-size:17px;font-weight:700;letter-spacing:-.01em}
+.brand h1 span{color:var(--muted);font-weight:500}
+.badge{font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:999px;background:rgba(90,160,255,.12);color:#9cc4ff;border:1px solid rgba(90,160,255,.3);white-space:nowrap}
+.tabs{display:flex;gap:4px;background:#0a1424;border:1px solid var(--line);padding:3px;border-radius:10px;margin-left:12px}
+.tab{padding:7px 14px;border-radius:7px;font-size:13px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:7px;white-space:nowrap}
+.tab.active{background:var(--panel2);color:var(--text);box-shadow:inset 0 0 0 1px var(--line2)}
+.hright{margin-left:auto;display:flex;align-items:center;gap:14px;white-space:nowrap}
+.status{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;padding:6px 11px;border-radius:8px;background:var(--greenbg);color:#7fe0b1;border:1px solid rgba(46,194,126,.3)}
+.status .dot{width:8px;height:8px;border-radius:50%;background:var(--green)}
+.status.alarm{background:var(--red);color:#fff;border-color:var(--red);animation:pulse 1.4s infinite}
+.status.alarm .dot{background:#fff}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(229,72,77,.55)}50%{box-shadow:0 0 0 7px rgba(229,72,77,0)}}
+.clock{font-variant-numeric:tabular-nums;font-size:15px;font-weight:600;letter-spacing:.02em}
+.user{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+.avatar{width:28px;height:28px;border-radius:50%;background:var(--panel2);border:1px solid var(--line2);display:grid;place-items:center;font-size:11px;font-weight:700;color:var(--text)}
+
+/* Main */
+main{display:grid;grid-template-columns:minmax(0,1fr) 460px;min-height:0;min-width:0}
+.map-wrap{position:relative;overflow:hidden;background:var(--map-forest);border-right:1px solid var(--line)}
+.map-wrap.alarm::after{content:"";position:absolute;inset:0;pointer-events:none;box-shadow:inset 0 0 0 3px rgba(229,72,77,.75),inset 0 0 60px rgba(229,72,77,.18)}
+.map-wrap.alarm.alldone::after{box-shadow:inset 0 0 0 3px rgba(46,194,126,.6),inset 0 0 60px rgba(46,194,126,.12)}
+#map{width:100%;height:100%;display:block}
+.ov{position:absolute;background:rgba(10,20,36,.88);border:1px solid var(--line2);border-radius:12px;backdrop-filter:blur(6px);box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.ov-title{top:16px;left:16px;padding:12px 15px}
+.ov-title .k{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.ov-title .v{font-size:16px;font-weight:700;margin-top:2px}
+.ov-title .s{font-size:12.5px;color:var(--muted);margin-top:2px}
+.ov-legend{left:16px;bottom:16px;padding:10px 14px;display:flex;gap:16px;font-size:12.5px;color:#c6d3e5}
+.ov-legend span{display:flex;align-items:center;gap:7px}
+.ov-legend i{width:12px;height:12px;border-radius:50%;display:inline-block;border:2px solid #fff}
+.ov-health{right:16px;bottom:16px;padding:12px 14px;width:336px}
+.ov-health .h{display:flex;justify-content:space-between;align-items:center;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.ov-health .stats{display:flex;gap:16px;margin:8px 0 9px}
+.ov-health .stats div{font-size:12px;color:var(--muted)}
+.ov-health .stats b{display:block;font-size:17px;color:var(--text);font-variant-numeric:tabular-nums}
+.warnrow{display:flex;gap:9px;align-items:center;width:100%;text-align:left;padding:8px 10px;border-radius:8px;background:rgba(242,169,59,.1);border:1px solid rgba(242,169,59,.35);font-size:12.5px;color:#f7cf8f}
+.warnrow:hover{background:rgba(242,169,59,.18)}
+.ov-tools{top:16px;right:16px;display:flex;flex-direction:column;overflow:hidden}
+.ov-tools button{width:36px;height:36px;display:grid;place-items:center;color:#c6d3e5;font-size:18px;font-weight:500}
+.ov-tools button+button{border-top:1px solid var(--line2)}
+.compass{position:absolute;top:118px;right:16px;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#c6d3e5}
+
+/* Markers */
+.mk{cursor:pointer}
+.mk .halo{fill:var(--red);opacity:.18;transition:fill .3s}
+.mk .core{fill:var(--red);stroke:#fff;stroke-width:2.5;transition:fill .3s}
+.mk.open .halo,.mk.open .core{fill:var(--green)}
+.mk .ripple{fill:none;stroke:var(--green);stroke-width:3;opacity:0}
+.mk.pop .ripple{animation:ripple 1s ease-out}
+.mk.pop .body{animation:popm .45s ease-out}
+@keyframes ripple{0%{r:14;opacity:.9}100%{r:44;opacity:0}}
+@keyframes popm{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+.mk .body{transform-box:fill-box;transform-origin:center}
+.mk .lbl{font-size:11px;font-weight:600;fill:#d2deee;paint-order:stroke;stroke:#0b192a;stroke-width:3.5px;text-anchor:middle}
+.mk .sh-open{display:none}.mk.open .sh-open{display:inline}.mk.open .sh-closed{display:none}
+.mk:hover .core{stroke-width:3.5}
+.mk.sel .core{stroke:#ffd166;stroke-width:3.5}
+.mk.dim{opacity:.35}
+.dz{transition:fill .4s,stroke .4s}
+.dz-label{font-size:12px;font-weight:700;letter-spacing:.1em;fill:#7f97b8}
+
+/* Card */
+.card{position:absolute;width:300px;background:#0f1e33;border:1px solid var(--line2);border-radius:14px;box-shadow:0 16px 40px rgba(0,0,0,.5);z-index:4;display:none;overflow:hidden}
+.card.show{display:block;animation:fadein .15s ease-out}
+@keyframes fadein{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.card-h{padding:13px 15px 11px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+.card-h .t{font-size:15.5px;font-weight:700}
+.card-h .a{font-size:12.5px;color:var(--muted);margin-top:2px}
+.card-h .x{width:26px;height:26px;border-radius:7px;color:var(--muted);font-size:18px;line-height:1;flex:none}
+.card-h .x:hover{background:var(--panel2);color:var(--text)}
+.card-b{padding:6px 15px 12px}
+.row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px dashed var(--line);font-size:13px}
+.row:last-child{border-bottom:0}
+.row .l{color:var(--muted)}
+.row .r{font-weight:600;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:7px}
+.pill{font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;letter-spacing:.03em;text-transform:uppercase}
+.pill.red{background:var(--redbg);color:#ff8a8e;border:1px solid rgba(229,72,77,.4)}
+.pill.green{background:var(--greenbg);color:#6fe0ac;border:1px solid rgba(46,194,126,.4)}
+.bat{width:26px;height:12px;border:1.5px solid #9fb2cc;border-radius:3px;position:relative;padding:1px}
+.bat::after{content:"";position:absolute;right:-4px;top:3px;width:2px;height:4px;background:#9fb2cc;border-radius:0 1px 1px 0}
+.bat i{display:block;height:100%;border-radius:1px;background:var(--green)}
+.card-warn{margin:0 15px 13px;padding:9px 11px;border-radius:9px;background:rgba(242,169,59,.12);border:1px solid rgba(242,169,59,.4);color:#f7cf8f;font-size:12.5px;font-weight:600;display:flex;gap:8px;align-items:center}
+
+/* Panel */
+aside{background:var(--panel);display:flex;flex-direction:column;min-height:0;overflow:hidden}
+.pane{display:flex;flex-direction:column;gap:16px;padding:20px;min-height:0;flex:1;overflow-y:auto}
+.pane.hidden{display:none}
+.sec-h{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:9px}
+.sec-h h2{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700}
+.sec-h .hint{font-size:12px;color:var(--dim)}
+.dlist{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0c1829}
+.drow{display:flex;align-items:center;gap:12px;padding:10px 13px;cursor:pointer;user-select:none}
+.drow+.drow{border-top:1px solid var(--line)}
+.drow:hover{background:#102037}
+.drow.master{background:#102038}
+.drow.disabled{cursor:default;opacity:.75}
+.cb{width:20px;height:20px;border-radius:6px;border:2px solid #4a6386;display:grid;place-items:center;flex:none;transition:.15s}
+.cb svg{opacity:0}
+.drow.on .cb{background:var(--blue);border-color:var(--blue)}
+.drow.on .cb svg{opacity:1}
+.dname{font-weight:600;font-size:14px}
+.dmeta{font-size:12px;color:var(--muted)}
+.dstate{margin-left:auto;font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;color:#ff8a8e;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.dstate.ok{color:#6fe0ac}
+.dstate i{width:8px;height:8px;border-radius:50%;background:currentColor}
+
+.bigbtn{width:100%;padding:18px 18px;border-radius:14px;background:linear-gradient(180deg,#ea4f54,#c9333a);color:#fff;font-size:18px;font-weight:700;letter-spacing:-.005em;display:flex;align-items:center;justify-content:center;gap:12px;box-shadow:0 10px 24px rgba(229,72,77,.28),inset 0 1px 0 rgba(255,255,255,.2)}
+.bigbtn:hover{filter:brightness(1.06)}
+.bigbtn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.subnote{text-align:center;font-size:12.5px;color:var(--muted);margin-top:9px}
+.confirm{border:1.5px solid var(--red);border-radius:14px;padding:15px 16px;background:var(--redbg)}
+.confirm .t{display:flex;gap:9px;align-items:center;font-weight:700;font-size:15.5px}
+.confirm p{font-size:13px;color:#d9c4c6;margin:7px 0 13px}
+.confirm .btns{display:flex;gap:10px}
+.btn{flex:1;padding:12px;border-radius:10px;font-weight:700;font-size:14.5px}
+.btn.red{background:var(--red);color:#fff}
+.btn.red:hover{background:#ef565b}
+.btn.ghost{border:1px solid var(--line2);color:var(--text);background:#0c1829}
+.btn.ghost:hover{background:var(--panel2)}
+.confirm .fine{font-size:11.5px;color:#b59ea1;margin-top:10px;display:flex;gap:6px;align-items:center}
+.progress{border:1px solid var(--line2);border-radius:14px;padding:15px 16px;background:#0c1829}
+.progress .top{display:flex;justify-content:space-between;align-items:center;font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.progress .big{font-size:21px;font-weight:600;margin:9px 0 10px;letter-spacing:-.01em;white-space:nowrap}
+.progress .big b{font-size:30px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums}
+.bar{height:8px;border-radius:99px;background:#1a2d47;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--green);border-radius:99px;transition:width .2s}
+.progress .sub{font-size:12.5px;color:var(--muted);margin-top:9px}
+.resetbtn{width:100%;margin-top:10px;padding:12px;border-radius:11px;border:1.5px solid #3a5376;color:#dbe5f2;font-weight:700;font-size:14px;background:#0f1e33;display:flex;justify-content:center;align-items:center;gap:9px}
+.resetbtn:hover{border-color:#5a7499;background:#132540}
+.chip{font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;letter-spacing:.04em}
+.chip.run{background:rgba(242,169,59,.15);color:#f7cf8f}
+.chip.done{background:var(--greenbg);color:#6fe0ac}
+.logsec{display:flex;flex-direction:column;flex:1;min-height:150px}
+.log{flex:1;border:1px solid var(--line);border-radius:12px;background:#0b1626;overflow-y:auto;padding:4px 0;min-height:0}
+.le{display:flex;gap:10px;padding:6px 13px;font-size:12.8px;align-items:baseline}
+.le.new{animation:flash 1s ease-out}
+@keyframes flash{from{background:rgba(90,160,255,.14)}to{background:transparent}}
+.le time{font-family:"JetBrains Mono",ui-monospace,"DejaVu Sans Mono",monospace;font-size:12px;color:var(--dim);flex:none}
+.le .d{width:7px;height:7px;border-radius:50%;flex:none;transform:translateY(-1px)}
+.le.g .d{background:var(--green)}.le.r .d{background:var(--red)}.le.a .d{background:var(--amber)}.le.b .d{background:var(--blue)}
+.le.a span{color:#f7cf8f}.le.r span{color:#ffb0b3}
+.le span{color:#d3deec}
+
+/* Resident */
+.rcap h2{font-size:12px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:700}
+.rcap p{font-size:13px;color:var(--muted);margin-top:4px}
+.phone-wrap{display:flex;justify-content:center;flex:1;align-items:flex-start}
+.phone{width:300px;height:620px;border-radius:44px;background:#05090f;padding:10px;box-shadow:0 24px 60px rgba(0,0,0,.55),0 0 0 1.5px #2a3b55;flex:none;position:relative}
+.screen{width:100%;height:100%;border-radius:35px;background:#f3f5f9;overflow:hidden;display:flex;flex-direction:column;color:#0d1b2e;position:relative}
+.notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:90px;height:24px;border-radius:14px;background:#05090f;z-index:2}
+.sbar{display:flex;justify-content:space-between;align-items:center;padding:11px 22px 0;height:40px;font-size:13px;font-weight:700}
+.appbar{display:flex;align-items:center;gap:7px;padding:6px 16px 8px;font-weight:700;font-size:14px}
+.appbar .city{margin-left:auto;font-size:12px;font-weight:600;color:#5b6b82}
+.alert{margin:0 12px;border-radius:14px;padding:10px 12px;background:#d92d33;color:#fff}
+.alert.calm{background:#e4eaf2;color:#33465f}
+.alert .k{font-size:13.5px;font-weight:800;letter-spacing:.06em;display:flex;align-items:center;gap:7px}
+.alert .m{font-size:12px;margin-top:2px;opacity:.95}
+.mini{margin:10px 12px 0;border-radius:14px;overflow:hidden;height:178px;background:#dfe6ee;position:relative}
+.ncard{margin:10px 12px 0;background:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 2px 10px rgba(13,27,46,.08)}
+.ncard .k{font-size:11.5px;color:#5b6b82;font-weight:600;text-transform:uppercase;letter-spacing:.06em}
+.ncard .line{display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
+.ncard .dist{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.ncard .st{font-size:13px;font-weight:800;letter-spacing:.06em;padding:4px 9px;border-radius:8px;display:flex;align-items:center;gap:5px}
+.ncard .st.open{background:#dcf6e9;color:#0d8a52}
+.ncard .st.closed{background:#fde3e4;color:#c22a30}
+.ncard .addr{font-size:12.5px;color:#33465f;margin-top:5px}
+.ncard .walk{font-size:12px;color:#5b6b82;margin-top:1px}
+.pbtn{margin:10px 12px 0;padding:12px;border-radius:13px;background:#0d1b2e;color:#fff;font-weight:700;font-size:14px;text-align:center}
+.plink{text-align:center;font-size:12px;color:#3c6fd1;font-weight:600;margin-top:9px}
+.walkdash{animation:dash 1.2s linear infinite}
+@keyframes dash{to{stroke-dashoffset:-16}}
+.me-pulse{animation:mep 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes mep{0%{transform:scale(.6);opacity:.7}100%{transform:scale(2.2);opacity:0}}
+
+@media (max-height:860px){
+  .drow{padding:8px 13px}
+  .pane{gap:13px;padding:16px 18px}
+  .bigbtn{padding:15px}
+  .phone{transform:scale(.86);transform-origin:top center;margin-bottom:-87px}
+}
+@media (max-width:1420px){
+  main{grid-template-columns:minmax(0,1fr) 420px}
+  .user .uname{display:none}
+  .status .long{display:none}
+  header{gap:12px;padding:0 16px}
+  .tabs{margin-left:4px}
+  .tab{padding:7px 11px}
+  .progress .big{font-size:17px}
+  .progress .big b{font-size:25px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M16 2 4 6.5v8.2c0 7.3 5 13.3 12 15.3 7-2 12-8 12-15.3V6.5L16 2Z" fill="#163055" stroke="#5aa0ff" stroke-width="1.6"/>
+        <rect x="11" y="14.5" width="10" height="8" rx="1.8" fill="#fff"/>
+        <path d="M13 14.5v-2.3a3 3 0 0 1 6 0v2.3" fill="none" stroke="#fff" stroke-width="1.9"/>
+        <circle cx="16" cy="18.4" r="1.3" fill="#163055"/>
+      </svg>
+      <h1>Secus <span>· Priedangų valdymo pultas</span></h1>
+      <span class="badge">Pilotas: Visaginas</span>
+    </div>
+    <nav class="tabs">
+      <button class="tab active" data-tab="pultas">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        Valdymo pultas</button>
+      <button class="tab" data-tab="gyventojas">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18h2"/></svg>
+        Gyventojo vaizdas</button>
+    </nav>
+    <div class="hright">
+      <div class="status" id="status"><span class="dot"></span><span id="statusText">Budėjimo režimas<span class="long"> · 12/12 įrenginių prisijungę</span></span></div>
+      <div class="clock" id="clock">14:02:00</div>
+      <div class="user"><div class="avatar">PG</div><span class="uname">PAGD operatorius</span></div>
+    </div>
+  </header>
+
+  <main>
+    <section class="map-wrap" id="mapWrap">
+      <svg id="map" viewBox="0 0 1000 820" preserveAspectRatio="xMidYMid slice" aria-label="Visagino priedangų žemėlapis"></svg>
+
+      <div class="ov ov-title">
+        <div class="k">Visagino savivaldybė</div>
+        <div class="v" id="ovCount">12 priedangų · 2 340 vietų</div>
+        <div class="s" id="ovSub">Visos priedangos užrakintos</div>
+      </div>
+      <div class="ov ov-tools"><button aria-label="Priartinti">+</button><button aria-label="Nutolinti">−</button></div>
+      <div class="ov compass" title="Šiaurė">
+        <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 3 15 12H9z" fill="#e5484d"/><path d="M12 21 9 12h6z" fill="#8ea2bd"/></svg>
+      </div>
+      <div class="ov ov-legend">
+        <span><i style="background:var(--red)"></i>Užrakinta</span>
+        <span><i style="background:var(--green)"></i>Atrakinta</span>
+        <span><i style="background:var(--amber);border-color:var(--amber);width:10px;height:10px"></i>Reikia priežiūros</span>
+        <span style="color:var(--muted)"><svg width="54" height="10"><path d="M1 2v6h52V2" fill="none" stroke="#8ea2bd" stroke-width="1.5"/></svg>250 m</span>
+      </div>
+      <div class="ov ov-health">
+        <div class="h"><span>Įrenginių būklė</span><span style="color:var(--dim);letter-spacing:0;text-transform:none;font-weight:500" id="healthTime">tikrinta 13:58:12</span></div>
+        <div class="stats">
+          <div><b style="color:#6fe0ac">12/12</b>prisijungę</div>
+          <div><b style="color:var(--amber)">1</b>įspėjimas</div>
+          <div><b>LTE-M</b>ryšys</div>
+        </div>
+        <button class="warnrow" id="warnRow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>
+          <span><b>Nr. 5</b> · Akumuliatorius 18 % – reikia keisti</span>
+        </button>
+      </div>
+
+      <div class="card" id="card"></div>
+    </section>
+
+    <aside>
+      <!-- Valdymo pultas -->
+      <div class="pane" id="pane-pultas">
+        <div>
+          <div class="sec-h"><h2>Pavojaus zona</h2><span class="hint">Pasirinkite rajonus</span></div>
+          <div class="dlist" id="dlist"></div>
+        </div>
+
+        <div id="action"></div>
+
+        <div class="logsec">
+          <div class="sec-h"><h2>Įvykių žurnalas</h2><span class="hint">visi veiksmai registruojami</span></div>
+          <div class="log" id="log"></div>
+        </div>
+      </div>
+
+      <!-- Gyventojo vaizdas -->
+      <div class="pane hidden" id="pane-gyventojas">
+        <div class="rcap">
+          <h2>Gyventojo vaizdas</h2>
+          <p>Ką mato Visagino gyventojas telefone (programėlė arba SMS nuoroda) – artimiausia priedanga ir jos būsena realiu laiku.</p>
+        </div>
+        <div class="phone-wrap">
+          <div class="phone"><div class="screen" id="screen"></div><div class="notch"></div></div>
+        </div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<script>
+(function(){
+const NS='http://www.w3.org/2000/svg';
+const $=s=>document.querySelector(s);
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e;}
+function plural(n,f){const a=n%10,b=n%100;if(a===1&&b!==11)return f[0];if(a>=2&&a<=9&&(b<10||b>=20))return f[1];return f[2];}
+const PR=['priedanga','priedangos','priedangų'], VT=['vieta','vietos','vietų'];
+const fmt=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+
+// Demonstracinis laikrodis: prasideda 14:02:00
+const T0=performance.now(), BASE=14*3600+2*60;
+function nowSec(){return BASE+Math.floor((performance.now()-T0)/1000);}
+function hms(s){const h=Math.floor(s/3600)%24,m=Math.floor(s/60)%60,x=s%60;return [h,m,x].map(v=>String(v).padStart(2,'0')).join(':');}
+setInterval(()=>{$('#clock').textContent=hms(nowSec());},250);
+
+const D=[
+  {id:'m1',name:'Mikrorajonas 1',x:110,y:150,w:255,h:330},
+  {id:'m2',name:'Mikrorajonas 2',x:395,y:85,w:250,h:215},
+  {id:'m3',name:'Mikrorajonas 3',x:675,y:150,w:255,h:330},
+  {id:'c', name:'Centras',       x:395,y:330,w:250,h:200},
+];
+const S=[
+  {n:1, d:'m1',x:175,y:225,a:'Jaunystės g. 4 rūsys',cap:180,bat:92,sig:-84},
+  {n:2, d:'m1',x:305,y:315,a:'Sodų g. 11 rūsys',cap:150,bat:88,sig:-90},
+  {n:3, d:'m1',x:190,y:420,a:'Ateities g. 23 rūsys',cap:220,bat:76,sig:-95},
+  {n:4, d:'m2',x:455,y:150,a:'Taikos pr. 14 rūsys',cap:240,bat:81,sig:-82},
+  {n:5, d:'m2',x:590,y:165,a:'Statybininkų g. 7 rūsys',cap:200,bat:18,sig:-88},
+  {n:6, d:'m2',x:510,y:262,a:'Draugystės g. 9 rūsys',cap:160,bat:95,sig:-79},
+  {n:7, d:'m3',x:745,y:225,a:'Kosmoso g. 30 rūsys',cap:210,bat:84,sig:-86},
+  {n:8, d:'m3',x:870,y:320,a:'Veteranų g. 2 rūsys',cap:170,bat:90,sig:-97},
+  {n:9, d:'m3',x:755,y:425,a:'Vilties g. 16 rūsys',cap:190,bat:73,sig:-91},
+  {n:10,d:'c', x:450,y:385,a:'Parko g. 5 rūsys',cap:260,bat:86,sig:-80},
+  {n:11,d:'c', x:595,y:385,a:'Sedulinos al. 21 rūsys',cap:160,bat:79,sig:-83},
+  {n:12,d:'c', x:530,y:485,a:'Mokyklos g. 3, gimnazijos rūsys',cap:200,bat:97,sig:-77},
+];
+S.forEach(s=>{s.open=false;s.check=s.n===5?'13:58:12':hms(BASE-240+s.n*3-60);s.id='SL-VIS-'+String(100+s.n*7).padStart(4,'0');});
+const dById=Object.fromEntries(D.map(d=>[d.id,d]));
+const totalCap=S.reduce((a,s)=>a+s.cap,0);
+
+const state={sel:new Set(D.map(d=>d.id)),phase:'idle',tab:'pultas',cardFor:null,alarmAt:null,elapsed:null};
+
+// ---------- Map ----------
+const svg=$('#map');
+function buildMap(){
+  const defs=el('defs',{},svg);
+  const pat=el('pattern',{id:'trees',width:22,height:22,patternUnits:'userSpaceOnUse'},defs);
+  el('circle',{cx:5,cy:6,r:3.2,fill:'#0f2236'},pat);el('circle',{cx:16,cy:15,r:2.6,fill:'#0f2236'},pat);el('circle',{cx:13,cy:3,r:1.8,fill:'#0e2034'},pat);
+  el('rect',{x:-200,y:-200,width:1400,height:1220,fill:'#0b192a'},svg);
+  el('rect',{x:-200,y:-200,width:1400,height:1220,fill:'url(#trees)'},svg);
+  // lake
+  el('path',{d:'M40 700 C 90 640, 230 650, 330 668 C 420 684, 470 720, 450 770 C 430 830, 230 850, 120 820 C 30 795, -10 740, 40 700Z',fill:'#0f2f4f',stroke:'#1c4a75','stroke-width':2},svg);
+  const lt=el('text',{x:205,y:752,'text-anchor':'middle','font-size':14,'font-style':'italic',fill:'#5f8ab8','letter-spacing':'.04em'},svg);lt.textContent='Visagino ežeras';
+  // town ground
+  el('ellipse',{cx:520,cy:320,rx:475,ry:300,fill:'#10213a'},svg);
+  // outer roads
+  const roads=el('g',{stroke:'#22395c','stroke-linecap':'round',fill:'none'},svg);
+  el('path',{d:'M520 20 C 800 20, 995 160, 995 320 C 995 480, 800 620, 520 620 C 240 620, 45 480, 45 320 C 45 160, 240 20, 520 20Z','stroke-width':10},roads);
+  el('path',{d:'M109 470 L -60 560','stroke-width':10},roads);
+  el('path',{d:'M884 513 L 1100 600','stroke-width':10},roads);
+  el('path',{d:'M520 620 L 560 900','stroke-width':9},roads);
+  // inner avenues
+  const av=el('g',{stroke:'#1d3354','stroke-linecap':'round',fill:'none','stroke-width':12},svg);
+  el('path',{d:'M380 30 V 610'},av);el('path',{d:'M660 30 V 610'},av);
+  el('path',{d:'M380 315 H 660'},av);el('path',{d:'M60 515 H 980'},av);el('path',{d:'M300 62 H 740'},av);
+  el('path',{d:'M110 140 H 930'},av);
+  // street labels
+  const lab=(x,y,t,r)=>{const e=el('text',{x,y,'font-size':11,'font-style':'italic',fill:'#55708f','text-anchor':'middle',transform:r?`rotate(${r} ${x} ${y})`:''},svg);e.textContent=t;};
+  lab(520,319,'Taikos pr.');lab(250,519,'Veteranų g.');lab(810,519,'Energetikų g.');lab(376,600,'Jaunystės g.',-90);lab(664,230,'Kosmoso g.',90);
+  const out=(x,y,t,a)=>{const e=el('text',{x,y,'font-size':12,'font-weight':600,fill:'#6c86a6','text-anchor':a||'start'},svg);e.textContent=t;};
+  out(68,578,'← Į Ignaliną');out(930,592,'Į Ignalinos AE →','end');
+
+  // districts
+  const dz=el('g',{},svg);
+  D.forEach(d=>{
+    d.rect=el('rect',{x:d.x,y:d.y,width:d.w,height:d.h,rx:20,class:'dz','stroke-width':2},dz);
+    const t=el('text',{x:d.x+16,y:d.y+24,class:'dz-label'},dz);t.textContent=d.name.toUpperCase();
+  });
+  // blocks (seeded)
+  let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return (seed-1)/2147483646;};
+  const bl=el('g',{fill:'#1e3556'},svg);
+  D.forEach(d=>{
+    const cw=40,ch=32,x0=d.x+16,y0=d.y+38,cols=Math.floor((d.w-28)/cw),rows=Math.floor((d.h-50)/ch);
+    for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){
+      const cx=x0+c*cw,cy=y0+r*ch;
+      if(S.some(s=>Math.hypot(s.x-(cx+cw/2),s.y-(cy+ch/2))<34))continue;
+      if(d.id==='c'&&c>=2&&c<=3&&r>=1&&r<=2)continue; // parkas
+      const p=rnd();
+      if(p<.42)el('rect',{x:cx+3+rnd()*4,y:cy+6+rnd()*10,width:30,height:9,rx:1.5},bl);
+      else if(p<.72)el('rect',{x:cx+8+rnd()*14,y:cy+3,width:9,height:24,rx:1.5},bl);
+      else if(p<.86){el('rect',{x:cx+4,y:cy+4,width:28,height:8,rx:1.5},bl);el('rect',{x:cx+4,y:cy+4,width:8,height:22,rx:1.5},bl);}
+      else if(p<.93)el('rect',{x:cx+6,y:cy+6,width:20,height:16,rx:2},bl);
+    }
+  });
+  // park in centre
+  const c=dById.c;
+  el('rect',{x:c.x+16+80+4,y:c.y+38+32+2,width:76,height:60,rx:12,fill:'#123a35',opacity:.9},svg);
+  const pt=el('text',{x:c.x+16+80+42,y:c.y+38+32+36,'text-anchor':'middle','font-size':10.5,fill:'#4f9c84','font-style':'italic'},svg);pt.textContent='Parkas';
+
+  // resident layer (route)
+  const rl=el('g',{id:'resLayer',style:'display:none'},svg);
+  el('path',{d:'M610 572 V 548 H 530 V 503',fill:'none',stroke:'#5aa0ff','stroke-width':6,'stroke-linecap':'round','stroke-linejoin':'round',opacity:.35},rl);
+  el('path',{d:'M610 572 V 548 H 530 V 503',fill:'none',stroke:'#8fc0ff','stroke-width':3,'stroke-dasharray':'2 8','stroke-linecap':'round','stroke-linejoin':'round',class:'walkdash'},rl);
+  el('circle',{cx:610,cy:578,r:10,fill:'#5aa0ff',class:'me-pulse'},rl);
+  el('circle',{cx:610,cy:578,r:8,fill:'#5aa0ff',stroke:'#fff','stroke-width':3},rl);
+  const g=el('g',{},rl);
+  el('rect',{x:628,y:564,width:150,height:28,rx:8,fill:'#0a1424',stroke:'#5aa0ff','stroke-width':1.5},g);
+  const yt=el('text',{x:703,y:583,'text-anchor':'middle','font-size':12.5,'font-weight':700,fill:'#cfe2ff'},g);yt.textContent='Jūs esate čia · 240 m';
+
+  // markers
+  const mg=el('g',{},svg);
+  S.forEach(s=>{
+    const g=el('g',{class:'mk',transform:`translate(${s.x} ${s.y})`,tabindex:0},mg);
+    el('circle',{class:'ripple',r:14},g);
+    const b=el('g',{class:'body'},g);
+    el('circle',{class:'halo',r:24},b);
+    el('circle',{class:'core',r:15},b);
+    el('rect',{x:-5.5,y:-1.5,width:11,height:8.5,rx:1.8,fill:'#fff'},b);
+    el('path',{class:'sh-closed',d:'M-3.4 -1.5 V-4.6 a3.4 3.4 0 0 1 6.8 0 V-1.5',fill:'none',stroke:'#fff','stroke-width':2},b);
+    el('path',{class:'sh-open',d:'M-3.4 -1.5 V-6.6 a3.4 3.4 0 0 1 6.8 0 V-5.4',fill:'none',stroke:'#fff','stroke-width':2},b);
+    if(s.bat<25){el('circle',{cx:12,cy:-12,r:6.5,fill:'#f2a93b',stroke:'#0b192a','stroke-width':2},b);const w=el('text',{x:12,y:-8.6,'text-anchor':'middle','font-size':9.5,'font-weight':800,fill:'#0b192a'},b);w.textContent='!';}
+    const t=el('text',{class:'lbl',y:36},g);t.textContent='Nr. '+s.n;
+    g.addEventListener('click',e=>{e.stopPropagation();openCard(s);});
+    s.g=g;
+  });
+  svg.addEventListener('click',()=>closeCard());
+}
+
+function paintDistricts(){
+  D.forEach(d=>{
+    const sel=state.sel.has(d.id), list=S.filter(s=>s.d===d.id), allOpen=list.every(s=>s.open);
+    let fill='rgba(255,255,255,0.015)',stroke='#2a4466',dash='6 6';
+    if(allOpen){fill='rgba(46,194,126,0.08)';stroke='rgba(46,194,126,.75)';dash='';}
+    else if(sel&&state.phase!=='idle'&&state.phase!=='confirm'){fill='rgba(229,72,77,0.07)';stroke='rgba(229,72,77,.75)';dash='';}
+    else if(sel){fill='rgba(90,160,255,0.06)';stroke='rgba(90,160,255,.7)';dash='';}
+    d.rect.setAttribute('fill',fill);d.rect.setAttribute('stroke',stroke);
+    if(dash)d.rect.setAttribute('stroke-dasharray',dash);else d.rect.removeAttribute('stroke-dasharray');
+  });
+}
+
+// ---------- Panel ----------
+const chk='<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5 10 17 19 7"/></svg>';
+function renderDistricts(){
+  const locked=state.phase!=='idle';
+  const all=state.sel.size===D.length;
+  let h=`<div class="drow master ${all?'on':''} ${locked?'disabled':''}" data-d="all"><div class="cb">${chk}</div><div><div class="dname">Visas miestas</div><div class="dmeta">${S.length} ${plural(S.length,PR)} · ${fmt(totalCap)} ${plural(totalCap,VT)}</div></div>
+    <div class="dstate ${S.every(s=>s.open)?'ok':''}"><i></i>${S.filter(s=>s.open).length}/${S.length} atrakinta</div></div>`;
+  D.forEach(d=>{
+    const l=S.filter(s=>s.d===d.id),cap=l.reduce((a,s)=>a+s.cap,0),o=l.filter(s=>s.open).length;
+    h+=`<div class="drow ${state.sel.has(d.id)?'on':''} ${locked?'disabled':''}" data-d="${d.id}"><div class="cb">${chk}</div><div><div class="dname">${d.name}</div><div class="dmeta">${l.length} ${plural(l.length,PR)} · ${fmt(cap)} ${plural(cap,VT)}</div></div>
+      <div class="dstate ${o===l.length?'ok':''}"><i></i>${o}/${l.length} atrakinta</div></div>`;
+  });
+  const dl=$('#dlist');dl.innerHTML=h;
+  dl.querySelectorAll('.drow').forEach(r=>r.addEventListener('click',()=>{
+    if(state.phase!=='idle')return;
+    const id=r.dataset.d;
+    if(id==='all'){if(state.sel.size===D.length)state.sel.clear();else D.forEach(d=>state.sel.add(d.id));}
+    else{state.sel.has(id)?state.sel.delete(id):state.sel.add(id);}
+    renderAll();
+  }));
+}
+function selected(){return S.filter(s=>state.sel.has(s.d));}
+function zoneName(){return state.sel.size===D.length?'Visas miestas':D.filter(d=>state.sel.has(d.id)).map(d=>d.name).join(', ');}
+
+const ico={
+  siren:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M7 18v-6a5 5 0 0 1 10 0v6"/><path d="M5 21h14v-3H5z"/><path d="M12 2v2M4.2 5.2l1.4 1.4M19.8 5.2l-1.4 1.4M2 12h1.5M20.5 12H22"/></svg>',
+  warn:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ff8a8e" stroke-width="2.2" stroke-linecap="round"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>',
+  lock:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>',
+  shield:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3 4 6v6c0 5 3.4 8.4 8 9.5 4.6-1.1 8-4.5 8-9.5V6l-8-3z"/></svg>'
+};
+function renderAction(){
+  const a=$('#action'),sel=selected(),cap=sel.reduce((x,s)=>x+s.cap,0);
+  if(state.phase==='idle'){
+    a.innerHTML=`<button class="bigbtn" id="alarmBtn" ${sel.length?'':'disabled'}>${ico.siren}Skelbti pavojų ir atrakinti</button>
+      <div class="subnote">${sel.length?`Pasirinkta: <b style="color:var(--text)">${sel.length} ${plural(sel.length,PR)}</b> · ${fmt(cap)} ${plural(cap,VT)}`:'Pasirinkite bent vieną rajoną'}</div>`;
+    $('#alarmBtn').onclick=()=>{state.phase='confirm';renderAll();};
+  }else if(state.phase==='confirm'){
+    a.innerHTML=`<div class="confirm"><div class="t">${ico.warn}Patvirtinkite pavojaus paskelbimą</div>
+      <p>Bus nuotoliniu būdu atrakinta <b style="color:#fff">${sel.length} ${plural(sel.length,PR)}</b> (${zoneName()}) – ${fmt(cap)} ${plural(cap,VT)}. Veiksmas registruojamas įvykių žurnale.</p>
+      <div class="btns"><button class="btn red" id="okBtn">Patvirtinti</button><button class="btn ghost" id="noBtn">Atšaukti</button></div>
+      <div class="fine">${ico.shield}Dviejų žingsnių patvirtinimas apsaugo nuo atsitiktinio atrakinimo</div></div>`;
+    $('#okBtn').onclick=startUnlock;$('#noBtn').onclick=()=>{state.phase='idle';renderAll();};
+  }else{
+    const o=sel.filter(s=>s.open).length,done=state.phase==='done';
+    const ocap=sel.filter(s=>s.open).reduce((x,s)=>x+s.cap,0);
+    a.innerHTML=`<div class="progress"><div class="top"><span>Atrakinimo eiga · ${zoneName()}</span><span class="chip ${done?'done':'run'}">${done?'Baigta':'Vykdoma…'}</span></div>
+      <div class="big">Atrakinta <b>${o} / ${sel.length}</b> priedangų${done?` · per ${state.elapsed} s`:''}</div>
+      <div class="bar"><i style="width:${sel.length?o/sel.length*100:0}%"></i></div>
+      <div class="sub">${fmt(ocap)} ${plural(ocap,VT)} prieinama gyventojams · pranešimas išsiųstas į gyventojų programėlę</div></div>
+      <button class="resetbtn" id="resetBtn">${ico.lock}Atšaukti pavojų / užrakinti</button>`;
+    $('#resetBtn').onclick=resetAll;
+  }
+}
+
+function log(text,type,t){
+  const lg=$('#log'),e=document.createElement('div');
+  e.className='le new '+(type||'b');
+  e.innerHTML=`<time>${t||hms(nowSec())}</time><i class="d"></i><span>${text}</span>`;
+  lg.prepend(e);
+}
+
+function updateHeader(){
+  const st=$('#status'),tx=$('#statusText'),mw=$('#mapWrap');
+  const sel=selected(),openAll=S.filter(s=>s.open).length;
+  if(state.phase==='unlocking'||state.phase==='done'){
+    st.classList.add('alarm');tx.textContent='ORO PAVOJUS · paskelbta '+state.alarmAt;
+    mw.classList.add('alarm');mw.classList.toggle('alldone',state.phase==='done');
+  }else{
+    st.classList.remove('alarm');tx.innerHTML='Budėjimo režimas<span class="long"> · 12/12 įrenginių prisijungę</span>';
+    mw.classList.remove('alarm','alldone');
+  }
+  $('#ovSub').innerHTML=openAll===0?'Visos priedangos užrakintos':`<span style="color:#6fe0ac;font-weight:600">Atrakinta ${openAll} iš ${S.length}</span> · ${S.length-openAll} užrakinta`;
+}
+
+function renderMarkers(){
+  S.forEach(s=>{
+    s.g.classList.toggle('open',s.open);
+    s.g.classList.toggle('sel',state.cardFor===s);
+    s.g.classList.toggle('dim',state.tab==='gyventojas'&&s.n!==12);
+  });
+  $('#resLayer').style.display=state.tab==='gyventojas'?'':'none';
+}
+
+function renderAll(){renderDistricts();renderAction();paintDistricts();renderMarkers();updateHeader();renderPhone();if(state.cardFor)fillCard(state.cardFor);}
+
+// ---------- Flow ----------
+function startUnlock(){
+  const sel=selected();
+  state.phase='unlocking';state.alarmAt=hms(nowSec());
+  const t0=performance.now();
+  log(`Pavojus paskelbtas: ${zoneName()} (PAGD operatorius, patvirtinta 2 žingsniais)`,'r');
+  renderAll();
+  setTimeout(()=>{log(`Atrakinimo komanda išsiųsta · ${sel.length} ${plural(sel.length,['įrenginys','įrenginiai','įrenginių'])} (LTE-M)`,'b');},350);
+  const order=sel.slice().sort((a,b)=>((a.n*7)%13)-((b.n*7)%13));
+  order.forEach((s,i)=>{
+    setTimeout(()=>{
+      if(state.phase!=='unlocking')return;
+      s.open=true;s.check=hms(nowSec());
+      s.g.classList.remove('pop');void s.g.getBBox();s.g.classList.add('pop');
+      log(`${dById[s.d].name} – priedanga Nr. ${s.n} atrakinta`,'g');
+      if(i===order.length-1){
+        state.phase='done';state.elapsed=Math.max(1,Math.round((performance.now()-t0+250)/1000));
+        setTimeout(()=>log(`Atrakinta ${sel.length} / ${sel.length} priedangų · per ${state.elapsed} s · gyventojai informuoti`,'g'),250);
+      }
+      renderAll();
+    },650+i*165+((s.n*37)%5)*12);
+  });
+}
+function resetAll(){
+  state.phase='idle';
+  log('Pavojus atšauktas – siunčiama užrakinimo komanda','b');
+  const open=S.filter(s=>s.open);
+  open.forEach((s,i)=>setTimeout(()=>{s.open=false;s.check=hms(nowSec());renderAll();
+    if(i===open.length-1)log(`Užrakinta ${open.length} / ${open.length} priedangų – budėjimo režimas`,'b');},120+i*70));
+  renderAll();
+}
+
+// ---------- Card ----------
+const card=$('#card');
+function fillCard(s){
+  const d=dById[s.d],low=s.bat<25;
+  const sigTxt=s.sig>-85?'stiprus':s.sig>-95?'geras':'vidutinis';
+  card.innerHTML=`<div class="card-h"><div><div class="t">Priedanga Nr. ${s.n}</div><div class="a">${s.a}<br>${d.name}</div></div><button class="x" aria-label="Uždaryti">×</button></div>
+   <div class="card-b">
+    <div class="row"><span class="l">Būsena</span><span class="r">${s.open?'<span class="pill green">Atrakinta</span>':'<span class="pill red">Užrakinta</span>'}</span></div>
+    <div class="row"><span class="l">Talpa</span><span class="r">${s.cap} ${plural(s.cap,VT)}</span></div>
+    <div class="row"><span class="l">Akumuliatorius</span><span class="r" style="${low?'color:var(--amber)':''}"><span class="bat"><i style="width:${s.bat}%;${low?'background:var(--amber)':''}"></i></span>${s.bat} %</span></div>
+    <div class="row"><span class="l">Ryšys</span><span class="r">LTE-M · ${sigTxt} (${s.sig} dBm)</span></div>
+    <div class="row"><span class="l">Paskutinė patikra</span><span class="r">${s.check}</span></div>
+    <div class="row"><span class="l">Spynos ID</span><span class="r" style="color:var(--muted);font-weight:500">${s.id}</span></div>
+   </div>
+   ${low?`<div class="card-warn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>Akumuliatorius 18 % – reikia keisti</div>`:''}`;
+  card.querySelector('.x').onclick=e=>{e.stopPropagation();closeCard();};
+}
+function openCard(s){
+  state.cardFor=s;fillCard(s);card.classList.add('show');
+  const wrap=$('#mapWrap').getBoundingClientRect(),m=s.g.querySelector('.core').getBoundingClientRect();
+  const mx=m.left+m.width/2-wrap.left,my=m.top+m.height/2-wrap.top;
+  const cw=300,chh=card.offsetHeight;
+  let x=mx+30;if(x+cw>wrap.width-12)x=mx-30-cw;
+  let y=my-chh/2;y=Math.max(12,Math.min(wrap.height-chh-12,y));
+  card.style.left=x+'px';card.style.top=y+'px';
+  renderMarkers();
+}
+function closeCard(){state.cardFor=null;card.classList.remove('show');renderMarkers();}
+card.addEventListener('click',e=>e.stopPropagation());
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeCard();});
+$('#warnRow').onclick=()=>openCard(S[4]);
+
+// ---------- Resident phone ----------
+function renderPhone(){
+  const s=S[11],alarm=state.phase==='unlocking'||state.phase==='done',open=s.open;
+  const col=open?'#18a463':'#d92d33';
+  $('#screen').innerHTML=`
+   <div class="sbar"><span>${hms(nowSec()).slice(0,5)}</span><span style="display:flex;gap:5px;align-items:center;font-size:11px">LTE
+     <svg width="16" height="11" viewBox="0 0 16 11"><rect x="0" y="7" width="3" height="4" rx=".8" fill="#0d1b2e"/><rect x="4.3" y="5" width="3" height="6" rx=".8" fill="#0d1b2e"/><rect x="8.6" y="2.5" width="3" height="8.5" rx=".8" fill="#0d1b2e"/><rect x="12.9" y="0" width="3" height="11" rx=".8" fill="#0d1b2e"/></svg>
+     <svg width="22" height="11" viewBox="0 0 22 11"><rect x=".5" y=".5" width="18" height="10" rx="2.5" fill="none" stroke="#0d1b2e"/><rect x="2" y="2" width="12" height="7" rx="1.2" fill="#0d1b2e"/><rect x="19.5" y="3.5" width="2" height="4" rx="1" fill="#0d1b2e"/></svg></span></div>
+   <div class="appbar"><svg width="18" height="18" viewBox="0 0 32 32"><path d="M16 2 4 6.5v8.2c0 7.3 5 13.3 12 15.3 7-2 12-8 12-15.3V6.5L16 2Z" fill="#0d1b2e"/><rect x="11" y="14.5" width="10" height="8" rx="1.8" fill="#fff"/><path d="M13 14.5v-2.3a3 3 0 0 1 6 0v2.3" fill="none" stroke="#fff" stroke-width="1.9"/></svg>Secus<span class="city">Visaginas</span></div>
+   ${alarm?`<div class="alert"><div class="k"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M12 3 2 21h20L12 3z"/><path d="M12 10v5M12 18h.01"/></svg>ORO PAVOJUS</div><div class="m">Nedelsdami vykite į artimiausią priedangą · paskelbta ${state.alarmAt.slice(0,5)}</div></div>`
+          :`<div class="alert calm"><div class="k">Pavojaus nėra</div><div class="m">Priedangos atsirakins automatiškai paskelbus pavojų</div></div>`}
+   <div class="mini">
+     <svg width="100%" height="100%" viewBox="0 0 256 178" preserveAspectRatio="xMidYMid slice">
+       <rect width="256" height="178" fill="#e3e9f0"/>
+       <g fill="#cfd8e3">
+         <rect x="10" y="12" width="58" height="14" rx="2"/><rect x="10" y="34" width="14" height="40" rx="2"/><rect x="32" y="40" width="40" height="12" rx="2"/>
+         <rect x="98" y="10" width="44" height="12" rx="2"/><rect x="150" y="10" width="12" height="40" rx="2"/><rect x="172" y="14" width="70" height="12" rx="2"/>
+         <rect x="172" y="34" width="34" height="26" rx="2"/><rect x="214" y="36" width="30" height="12" rx="2"/>
+         <rect x="10" y="100" width="44" height="12" rx="2"/><rect x="10" y="120" width="12" height="44" rx="2"/><rect x="30" y="126" width="50" height="12" rx="2"/>
+         <rect x="178" y="104" width="64" height="12" rx="2"/><rect x="178" y="124" width="12" height="40" rx="2"/><rect x="198" y="138" width="44" height="12" rx="2"/>
+       </g>
+       <rect x="96" y="36" width="44" height="30" rx="7" fill="#cde6d9"/>
+       <g stroke="#fff" stroke-width="9" fill="none" stroke-linecap="round"><path d="M0 86H256"/><path d="M88 0V178"/><path d="M164 70V178"/></g>
+       <path d="M200 160 V 128 H 164 V 86 H 128" fill="none" stroke="#3c7be0" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity=".25"/>
+       <path d="M200 160 V 128 H 164 V 86 H 128" fill="none" stroke="#2f6fe0" stroke-width="3.5" stroke-dasharray="1 7" stroke-linecap="round" stroke-linejoin="round" class="walkdash"/>
+       <circle cx="200" cy="162" r="9" fill="#2f6fe0" class="me-pulse"/>
+       <circle cx="200" cy="162" r="6.5" fill="#2f6fe0" stroke="#fff" stroke-width="2.5"/>
+       <g transform="translate(120 78)">
+         <path d="M0 -20 C -10 -20 -15 -13 -15 -6 C -15 4 0 14 0 14 C 0 14 15 4 15 -6 C 15 -13 10 -20 0 -20Z" fill="${col}" stroke="#fff" stroke-width="2.5"/>
+         <rect x="-5" y="-9" width="10" height="7.5" rx="1.6" fill="#fff"/>
+         <path d="${open?'M-3 -9 V-13.6 a3 3 0 0 1 6 0 V-12.4':'M-3 -9 V-11.6 a3 3 0 0 1 6 0 V-9'}" fill="none" stroke="#fff" stroke-width="1.8"/>
+       </g>
+       <rect x="138" y="62" width="${open?84:86}" height="20" rx="6" fill="#fff" stroke="${col}" stroke-width="1.2"/>
+       <text x="${open?180:181}" y="76" text-anchor="middle" font-size="10" font-weight="800" fill="${col}" font-family="Inter,system-ui,sans-serif" letter-spacing=".04em">${open?'ATRAKINTA':'UŽRAKINTA'}</text>
+     </svg>
+   </div>
+   <div class="ncard">
+     <div class="k">Artimiausia priedanga</div>
+     <div class="line"><span class="dist">240 m</span><span style="color:#8a98ab;font-weight:700">·</span>
+       <span class="st ${open?'open':'closed'}">${open
+         ?'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.5-1.8"/></svg>ATRAKINTA'
+         :'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>UŽRAKINTA'}</span></div>
+     <div class="addr">Priedanga Nr. 12 · Mokyklos g. 3, gimnazijos rūsys</div>
+     <div class="walk">~3 min. pėsčiomis · talpa 200 vietų</div>
+   </div>
+   <div class="pbtn">Rodyti maršrutą</div>
+   <div class="plink">Kitos priedangos netoliese (3)</div>`;
+}
+setInterval(()=>{if(state.tab==='gyventojas'){const sb=document.querySelector('.sbar span');if(sb)sb.textContent=hms(nowSec()).slice(0,5);}},1000);
+
+// ---------- Tabs ----------
+document.querySelectorAll('.tab').forEach(t=>t.addEventListener('click',()=>{
+  state.tab=t.dataset.tab;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x===t));
+  $('#pane-pultas').classList.toggle('hidden',state.tab!=='pultas');
+  $('#pane-gyventojas').classList.toggle('hidden',state.tab!=='gyventojas');
+  closeCard();renderAll();
+}));
+
+// ---------- Init ----------
+buildMap();
+log('Savaitinis spynų testas: 12/12 atsidarė ir užsirakino','g','07:30:00');
+log('Sistemos savitikra atlikta – visi moduliai veikia','b','08:00:00');
+log('Priedanga Nr. 9 – atidaryta vietoje administratoriaus kortele, užrakinta 10:52','b','10:41:27');
+log('Įrenginių patikra: 12/12 prisijungę per LTE-M','b','12:00:00');
+log('Įrenginių patikra: 12/12 prisijungę per LTE-M','b','13:58:12');
+log('Priedanga Nr. 5 (Mikrorajonas 2) – akumuliatorius 18 % – reikia keisti','a','13:58:12');
+document.querySelectorAll('.le.new').forEach(e=>e.classList.remove('new'));
+renderAll();
+})();
+</script>
+</body>
+</html>

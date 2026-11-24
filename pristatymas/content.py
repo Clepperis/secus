@@ -12,6 +12,7 @@ SLIDES = [
       "Spalio 18-ąją Šiaulių ir Panevėžio apskrityse paskelbtas oro pavojus. Žmonės bėga į priedangas, o Šiauliuose daugiau nei pusė jų užrakintos. "
       "Raktas pas administratorių, kuris gal darbe, gal atostogose. Tą dieną priedangose pasislėpė vos apie 105 žmonės. "
       "Taisyklės leidžia priedangą paruošti per 12 valandų, o pavojus trunka minutes. Taip žmonės praranda pasitikėjimą ir kitą kartą net neina.",
+      "[Nuotraukoje – kadras iš gyventojo vaizdo įrašo (Facebook). Galite pasakyti: „Štai ką nufilmavo gyventojas – užrakintos durys.“]",
       "Šaltiniai: LRT, 2026-10 (lrt.lt/naujienos/lietuvoje/2/3087496); LRT apie 12 val. taisyklę (lrt.lt/naujienos/lietuvoje/2/2935348).",
     ],
   },
@@ -24,9 +25,9 @@ SLIDES = [
     "notes": [
       "KALBĖTOJO TEKSTAS (~25 s):",
       "Mūsų sprendimas – Secus: išmani spyna ant priedangos durų ir valdymo pultas savivaldybei. "
-      "Paskelbus pavojų, operatorius pažymi rajoną arba visą miestą, patvirtina antru paspaudimu – ir visos ten esančios priedangos atsirakina per kelias sekundes. "
+      "Paskelbus pavojų, operatorius pažymi rajoną arba visą miestą, patvirtina antru paspaudimu – ir visos ten esančios priedangos atsirakina per mažiau nei minutę. "
       "Pultas rodo kiekvienos spynos būseną, bateriją ir ryšį, todėl iš anksto matome, kuri spyna sugedusi. "
-      "Dingus elektrai spyna atsirakina pati, o įprastas raktas lieka atsarginis variantas. "
+      "Spyna veikia nuo ličio baterijų, todėl elektros dingimas jos neišjungia; gamintojai panašioms NB-IoT spynoms nurodo 2–5 metus, o pultas iš anksto įspėja, kada keisti bateriją. Įprastas raktas lieka atsarginis variantas. "
       "[Jei galite – parodykite prototipą gyvai arba nuotrauką.] DI naudojome faktams ir kainoms surinkti bei prototipui sukurti.",
     ],
   },
@@ -61,18 +62,19 @@ SLIDES = [
   },
   {  # 5 Kiek reikia
     "text": [
-      "Apie 10 000 € pilotui – 20 Visagino priedangų (~350 € vienoms durims).",
-      "Įranga 4 600 €, montavimas 2 400 €, pultas 2 000 €, ryšys metams 700 €.",
-      "Apie 3 mėnesius, elektriko, savivaldybės sutikimo ir kibernetinio saugumo patikros.",
+      "Apie 10 000 € pilotui: 12 mūsų spynų Visagine ir valdymo pultas.",
+      "Spynos 3 600 €, kūrimas 3 000 €, pultas 2 000 €, montavimas ir ryšys 1 000 €.",
+      "Apie 3 mėnesius, inžinieriaus mentoriaus, savivaldybės sutikimo ir kibernetinio saugumo patikros.",
     ],
     "notes": [
       "KALBĖTOJO TEKSTAS (~20 s):",
-      "Pilotui 20-yje Visagino priedangų reikėtų apie 10 000 eurų – maždaug 350 eurų vienoms durims. "
-      "Skaičiavome pagal rinkos kainas: lietuviškas Teltonika LTE valdiklis – apie 131 €, elektros spyna – nuo 30 iki 113 €, elektrikas – apie 40 € per valandą. "
-      "Pinigai: įranga 4 600, montavimas 2 400, pultas 2 000, ryšys metams apie 700 eurų. "
-      "Laiko reikia apie 3 mėnesių, o pagalbos – elektriko, savivaldybės sutikimo ir kibernetinio saugumo patikros, nes nuotoliniu būdu atrakinamos durys turi būti apsaugotos nuo įsilaužimo.",
-      "Skaičiavimas: durims – valdiklis ~131 € + spyna ~60 € + maitinimas su akumuliatoriumi ~40 € = ~230 € įrangos; montavimas 3 val. × 40 € = 120 €. 20 durų: 4 600 € + 2 400 €. "
-      "Pultas (serveris, kūrimas, saugumo patikra) ~2 000 €. Ryšys: 20 SIM × ~3 €/mėn. × 12 = ~720 €. Iš viso ~9 700 € ≈ 10 000 €.",
+      "Pilotui reikėtų apie 10 000 eurų: 12 mūsų spynų Visagino priedangose ir valdymo pultas. "
+      "Viena spyna su NB-IoT ryšio moduliu ir ličio baterijomis kainuotų apie 300 eurų; laidų tiesti nereikia, todėl montavimas pigus. "
+      "Pinigai: spynos 3 600, spynos kūrimas ir bandymai 3 000, pultas 2 000, montavimas ir ryšys metams apie 1 000 eurų. "
+      "Laiko reikia apie 3 mėnesių, o pagalbos – inžinieriaus mentoriaus, savivaldybės sutikimo ir kibernetinio saugumo patikros, nes nuotoliniu būdu atrakinamos durys turi būti apsaugotos nuo įsilaužimo.",
+      "Skaičiavimas (apytikris, mūsų prielaidos): spyna ~300 € × 12 = 3 600 €; kūrimas (prototipai, korpusas, bandymai) ~3 000 €; pultas (serveris, kūrimas, saugumo patikra) ~2 000 €; "
+      "montavimas ~40 € × 12 ≈ 500 € + ryšys 12 SIM × ~3 €/mėn. × 12 ≈ 430 € ≈ 1 000 €. Iš viso ~9 600 € ≈ 10 000 €. "
+      "Palyginimui: Igloohome išmani spyna (be mobiliojo ryšio) kainuoja 160–300 €.",
     ],
   },
   {  # 6 Komanda
